@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+          http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+          http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+    <context:component-scan base-package="org.fawn.webapp"/>
+    
+    <bean id="jspResolver"
+            class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+            <property name="prefix">
+                    <value>/</value>
+            </property>
+            <property name="suffix">
+                    <value>.jsp</value>
+            </property>
+    </bean>
+
+    <mvc:resources mapping="/resources/css/**" location="/resources/css/"/>
+    <mvc:resources mapping="/resources/img/**" location="/resources/img/"/>
+    <mvc:resources mapping="/resources/js/**" location="/resources/js/"/>
+    <mvc:annotation-driven conversion-service="conversionService"/>
+    
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean" >
+        <property name="converters">
+            <set>
+                <bean class="org.fawn.webapp.utility.StringToPublisherConverter"/>
+                <bean class="org.fawn.webapp.utility.StringToCategoryConverter"/>
+            </set>
+        </property>
+    </bean>
+
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+        p:location="classpath:/h2.properties"
+        />
+        
+        <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close"
+        p:driverClassName="${jdbc.driver}"
+        p:url="${jdbc.url}"
+        p:username="${jdbc.username}"
+        p:password="${jdbc.password}"
+        />
+        
+        <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+            <property name="configLocation">
+                <value>classpath:hibernate.cfg.xml</value>
+            </property>
+            <!--property name="configuration">
+                <value>org.hibernate.cfg.AnnotationConfiguration</value>
+            </property-->
+            <property name="hibernateProperties">
+                <props>
+                    <prop key="hibernate.dialect">${jdbc.dialect}</prop>
+                    <prop key="hibernate.show_sql">false</prop>
+                    <prop key="hibernate.hbm2ddl.auto">validate</prop>
+                </props>
+            </property>
+            <property name="dataSource" ref="dataSource"/>    
+        </bean>
+        <tx:annotation-driven/>
+        <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+            <property name="sessionFactory" ref="sessionFactory"/>
+        </bean>
+</beans>
