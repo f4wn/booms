@@ -12,6 +12,12 @@
     <slf4j.version>1.7.7</slf4j.version>
     <spring.version>4.0.6.RELEASE</spring.version>
   </properties>
+  <repositories>
+        <repository>
+            <id>java.net</id>
+            <url>http://download.java.net/maven/2/</url>
+        </repository>
+  </repositories>
   <dependencies>
       <dependency>
             <groupId>org.eclipse.jetty</groupId>
@@ -42,21 +48,6 @@
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
-        <!--dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
@@ -168,13 +159,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.4</version>
-                <!--configuration>
-                <webResources>
-                    <resource>
-                        
-                    </resource>
-                </webResources>    
-                </configuration-->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
