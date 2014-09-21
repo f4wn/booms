@@ -5,12 +5,18 @@
 package org.fawn.webapp.service;
 
 import org.fawn.webapp.entity.Book;
+import org.fawn.webapp.entity.Publisher;
 import static org.junit.Assert.*;
 import org.junit.Test;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import java.util.List;
+import java.util.ArrayList;
+import org.fawn.webapp.entity.Category;
 
 /**
  *
@@ -23,6 +29,37 @@ public class BookServiceTest {
     @Autowired
     private IBookService bookService;
     
+    @Autowired
+    private IPublisherService publisherService;
+    
+    @Autowired
+    private ICategoryService categoryService;
+    
+    private Publisher publisher;
+    
+    private List<Category> categoryList;
+    
+    @Before
+    public void initTest(){
+        publisher = new Publisher();
+        publisher.setPublisherName("Dummy Book Publisher 1");
+        publisher.setLocation("Dummy Publisher 1 Location");
+        publisherService.addPublisher(publisher);
+        
+        categoryList = new ArrayList<Category>();
+        Category category = new Category();
+        category.setCategoryName("Dummy Book Category 1");
+        category.setDescription("Dummy Book Category Description");
+        categoryList.add(category);
+        categoryService.addCategory(category);
+    }
+    
+    @After
+    public void postTest(){
+        publisherService.removePublisher(publisher.getId());
+        categoryService.removeCategory(categoryList.get(0).getCategoryName());
+    }
+    
     @Test
     public void testAddBook(){
         Book book = new Book();
@@ -30,6 +67,8 @@ public class BookServiceTest {
         book.setAuthor("Josh Kaufman");
         book.setTitle("The Personal MBA");
         book.setYearPublished("2014");
+        book.setPublisher(publisher);
+        book.setCategoryList(categoryList);
         
         assertNull(bookService.getBookByIsbn(book.getIsbn()));
         bookService.addBook(book);
@@ -48,6 +87,8 @@ public class BookServiceTest {
         book.setAuthor("Alex Warren");
         book.setTitle("The Dummy Book");
         book.setYearPublished("2013");
+        book.setPublisher(publisher);
+        book.setCategoryList(categoryList);
         
         bookService.addBook(book);
         
@@ -63,6 +104,8 @@ public class BookServiceTest {
         book.setAuthor("Anonymous");
         book.setTitle("The Temporary");
         book.setYearPublished("2014");
+        book.setPublisher(publisher);
+        book.setCategoryList(categoryList);
         
         bookService.addBook(book);
         

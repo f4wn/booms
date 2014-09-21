@@ -25,35 +25,35 @@ public class CategoryServiceTest {
     @Test
     public void testAddCategory(){
         Category category = new Category();
-        category.setName("Business");
+        category.setCategoryName("Business");
         category.setDescription("Business Book");
         
-        assertNull(categoryService.getCategoryByName(category.getName()));
+        assertNull(categoryService.getCategoryByName(category.getCategoryName()));
         categoryService.addCategory(category);
         assertTrue(categoryService.getCategoryList().size()>0);
-        Category persistedCategory = categoryService.getCategoryByName(category.getName());
-        assertEquals(category.getName(), persistedCategory.getName());
+        Category persistedCategory = categoryService.getCategoryByName(category.getCategoryName());
+        assertEquals(category.getCategoryName(), persistedCategory.getCategoryName());
         assertEquals(category.getDescription(), persistedCategory.getDescription());
     }
     
     @Test
     public void testRemoveCategory(){
         Category category = new Category();
-        category.setName("Science Fiction");
+        category.setCategoryName("Science Fiction");
         category.setDescription("Science Fiction Book");
         
         categoryService.addCategory(category);
         
-        assertNotNull(categoryService.getCategoryByName(category.getName()));
-        categoryService.removeCategory(category.getName());
-        assertNull(categoryService.getCategoryByName(category.getName()));
+        assertNotNull(categoryService.getCategoryByName(category.getCategoryName()));
+        categoryService.removeCategory(category.getCategoryName());
+        assertNull(categoryService.getCategoryByName(category.getCategoryName()));
         
     }
     
     @Test
     public void testUpdateCategory(){
         Category category = new Category();
-        category.setName("Finance");
+        category.setCategoryName("Finance");
         category.setDescription("Finance Book");
         
         categoryService.addCategory(category);
@@ -62,7 +62,7 @@ public class CategoryServiceTest {
         category.setDescription("Finance and Economy Book");
         
         categoryService.updateCategory(category);
-        Category persistedCategory = categoryService.getCategoryByName(category.getName());
+        Category persistedCategory = categoryService.getCategoryByName(category.getCategoryName());
         assertNotSame(oldDescription, persistedCategory.getDescription());
         assertEquals(category.getDescription(), persistedCategory.getDescription());
         

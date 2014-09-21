@@ -27,7 +27,7 @@ public class PublisherServiceTest {
     public void testAddPublisher(){
         Publisher publisher = new Publisher();
         publisher.setId("1");
-        publisher.setName("London Press");
+        publisher.setPublisherName("London Press");
         publisher.setLocation("London, UK");
         
         assertNull(publisherService.getPublisherById(publisher.getId()));
@@ -35,7 +35,7 @@ public class PublisherServiceTest {
         assertTrue(publisherService.getPublisherList().size()>0);
         
         Publisher persistedPublisher = publisherService.getPublisherById(publisher.getId());
-        assertEquals(publisher.getName(), persistedPublisher.getName());
+        assertEquals(publisher.getPublisherName(), persistedPublisher.getPublisherName());
         assertEquals(publisher.getLocation(), persistedPublisher.getLocation());
         
     }
@@ -44,7 +44,7 @@ public class PublisherServiceTest {
     public void testRemovePublisher(){
         Publisher publisher = new Publisher();
         publisher.setId("2");
-        publisher.setName("New York Times");
+        publisher.setPublisherName("New York Times");
         publisher.setLocation("NY, USA");
         
         publisherService.addPublisher(publisher);
@@ -60,7 +60,7 @@ public class PublisherServiceTest {
     public void testUpdatePublisher(){
         Publisher publisher = new Publisher();
         publisher.setId("3");
-        publisher.setName("Associated Press");
+        publisher.setPublisherName("Associated Press");
         publisher.setLocation("NY, US");
         
         publisherService.addPublisher(publisher);

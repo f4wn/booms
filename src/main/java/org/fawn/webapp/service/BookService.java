@@ -50,6 +50,12 @@ public class BookService implements IBookService {
     public void updateBook(Book book) {
         bookDAO.updateBook(book);
     }
+
+    @Transactional
+    @Override
+    public List<Book> searchBooksByTitle(String title) {
+        return bookDAO.searchBooksByTitle(title);
+    }
     
     
     

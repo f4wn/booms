@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  *
@@ -16,9 +17,10 @@ import javax.persistence.*;
 @Entity
 @Table(name="category")
 public class Category implements Serializable {
+    @NotBlank
     @Id
     @Column(name="name")
-    private String name;
+    private String categoryName;
 
     @Column(name="description")
     private String description;
@@ -27,12 +29,12 @@ public class Category implements Serializable {
     @JoinTable(name="category_book",joinColumns=@JoinColumn(name="isbn"),inverseJoinColumns=@JoinColumn(name="name"))
     private List<Book> bookList;
     
-    public String getName() {
-        return name;
+    public String getCategoryName() {
+        return categoryName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCategoryName(String name) {
+        this.categoryName = name;
     }
 
     public String getDescription() {

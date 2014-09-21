@@ -6,10 +6,10 @@ package org.fawn.webapp.dao;
 
 import java.util.List;
 import org.fawn.webapp.entity.Book;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
 /**
  *
  * @author Fawn
@@ -44,6 +44,14 @@ public class BookDAO implements IBookDAO{
     @Override
     public void updateBook(Book book) {
         sessionFactory.getCurrentSession().update(book);
+    }
+    
+    
+    @Override
+    public List<Book> searchBooksByTitle(String title) {
+        Query query = sessionFactory.getCurrentSession().createQuery("from Book where lower(title) like lower(:title)");
+        query.setString("title", "%"+title+"%");
+        return query.list();
     }
     
 }

@@ -9,7 +9,9 @@ import java.util.List;
 import org.fawn.webapp.entity.Book;
 import org.fawn.webapp.entity.Category;
 import org.fawn.webapp.entity.Publisher;
+import org.junit.After;
 import static org.junit.Assert.*;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -35,6 +37,31 @@ public class RelationshipTest {
     @Autowired
     private ICategoryService categoryService;
     
+    private Publisher dummyPublisher;
+    
+    private List<Category> dummyCategoryList;
+    
+    @Before
+    public void initTest(){
+        dummyPublisher = new Publisher();
+        dummyPublisher.setPublisherName("Dummy Book Publisher 1");
+        dummyPublisher.setLocation("Dummy Publisher 1 Location");
+        publisherService.addPublisher(dummyPublisher);
+        
+        dummyCategoryList = new ArrayList<Category>();
+        Category category = new Category();
+        category.setCategoryName("Dummy Book Category 1");
+        category.setDescription("Dummy Book Category Description");
+        dummyCategoryList.add(category);
+        categoryService.addCategory(category);
+    }
+    
+    @After
+    public void postTest(){
+        publisherService.removePublisher(dummyPublisher.getId());
+        categoryService.removeCategory(dummyCategoryList.get(0).getCategoryName());
+    }
+    
     @Test
     public void testBookPublisherRelationship(){
         Book book = new Book();
@@ -42,10 +69,12 @@ public class RelationshipTest {
         book.setAuthor("John Simangunsong");
         book.setTitle("Batak Tribe");
         book.setYearPublished("2015");
+        book.setCategoryList(dummyCategoryList);
+        dummyCategoryList.get(0).addBookIntoList(book);
         
         Publisher publisher = new Publisher();
         publisher.setId("5");
-        publisher.setName("Jakarta Pustaka");
+        publisher.setPublisherName("Jakarta Pustaka");
         publisher.setLocation("Jakarta");
         
         
@@ -56,20 +85,22 @@ public class RelationshipTest {
 	publisher.setBookList(bookList);
         publisherService.addPublisher(publisher);
         bookService.addBook(book);
+        categoryService.updateCategory(dummyCategoryList.get(0));
         
         Publisher persistedPublisher = publisherService.getPublisherById(publisher.getId());
         assertNotNull(persistedPublisher);
-		//bookService.addBook(book);
         
         Book persistedBook = bookService.getBookByIsbn(book.getIsbn());
         assertNotNull(persistedBook);
         assertEquals(persistedBook.getPublisher().getId(), persistedPublisher.getId());
-        assertEquals(persistedBook.getPublisher().getName(), persistedPublisher.getName());
+        assertEquals(persistedBook.getPublisher().getPublisherName(), persistedPublisher.getPublisherName());
         assertEquals(persistedBook.getPublisher().getLocation(), persistedPublisher.getLocation());
         
         //Try remove book, Publisher should not be cascaded
         publisher.setBookList(null);
         publisherService.updatePublisher(publisher);
+        dummyCategoryList.get(0).removeBookFromList(book);
+        categoryService.updateCategory(dummyCategoryList.get(0));
         bookService.removeBook(book.getIsbn());
         
         persistedBook = bookService.getBookByIsbn(book.getIsbn());
@@ -86,6 +117,7 @@ public class RelationshipTest {
         publisherService.removePublisher(persistedPublisher.getId());
         assertNull(publisherService.getPublisherById(persistedPublisher.getId()));
         assertNull(publisherService.getPublisherById(persistedBook.getIsbn()));
+        
     }
     
     private final static Logger logger = (Logger) LoggerFactory.getLogger(RelationshipTest.class);
@@ -97,19 +129,23 @@ public class RelationshipTest {
         book1.setAuthor("Book1 Author");
         book1.setTitle("Book1 Title");
         book1.setYearPublished("2014");
+        book1.setPublisher(dummyPublisher);
+        dummyPublisher.addBookIntoList(book1);
         
         Book book2 = new Book();
         book2.setIsbn("20140920-1040");
         book2.setAuthor("Book2 Author");
         book2.setTitle("Book2 Title");
         book2.setYearPublished("2014");
+        book2.setPublisher(dummyPublisher);
+        dummyPublisher.addBookIntoList(book2);
         
         Category category1 = new Category();
-        category1.setName("History");
+        category1.setCategoryName("History");
         category1.setDescription("History book");
         
         Category category2 = new Category();
-        category2.setName("Art");
+        category2.setCategoryName("Art");
         category2.setDescription("Art book");
         
         categoryService.addCategory(category1);
@@ -122,6 +158,8 @@ public class RelationshipTest {
         bookService.addBook(book1);
         bookService.addBook(book2);
         
+        publisherService.updatePublisher(dummyPublisher);
+        
         category1.addBookIntoList(book1);
         category1.addBookIntoList(book2);
         category2.addBookIntoList(book2);
@@ -131,16 +169,17 @@ public class RelationshipTest {
         //try remove category1 will update relation with book1 and book2
         category1.setBookList(null);
         categoryService.updateCategory(category1);
-        categoryService.removeCategory(category1.getName());
-        assertNull(categoryService.getCategoryByName(category1.getName()));
+        categoryService.removeCategory(category1.getCategoryName());
+        assertNull(categoryService.getCategoryByName(category1.getCategoryName()));
         assertNotNull(bookService.getBookByIsbn(book1.getIsbn()));
         assertTrue(bookService.getBookByIsbn(book1.getIsbn()).getCategoryList().isEmpty());
         assertNotNull(bookService.getBookByIsbn(book2.getIsbn()));
         
-        logger.info(bookService.getBookByIsbn(book2.getIsbn()).getCategoryList().get(0).getName());
+        logger.info(bookService.getBookByIsbn(book2.getIsbn()).getCategoryList().get(0).getCategoryName());
         assertTrue(bookService.getBookByIsbn(book2.getIsbn()).getCategoryList().size()==1);
-        assertEquals(bookService.getBookByIsbn(book2.getIsbn()).getCategoryList().get(0).getName(), category2.getName());
+        assertEquals(bookService.getBookByIsbn(book2.getIsbn()).getCategoryList().get(0).getCategoryName(), category2.getCategoryName());
         
-        
+        category2.setBookList(null);
+        categoryService.updateCategory(category2);
     }
 }

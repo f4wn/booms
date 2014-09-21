@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <title>Alexandria Book Management System</title>
+    <link rel="stylesheet" type="text/css" href="resources/css/foundation.min.css"/>
+	<link rel="stylesheet" type="text/css" href="resources/css/foundation.css"/>
+	<link rel="stylesheet" type="text/css" href="resources/css/normalize.min.css"/>
+    <script src="resources/js/vendor/jquery.js"></script> 
+    <script src="resources/js/vendor/modernizr.js"></script>
+    <script src="resources/js/foundation.min.js"></script>
+    <script src="resources/js/vendor/fastclick.js"></script>
+    <script>
+    $(function() {
+        $(document).foundation();
+    });
+    </script>
+</head>
+    <body>
+        
+        
+<nav class="top-bar" data-topbar role="navigation"> 
+    <ul class="title-area"> 
+        <li class="name"> 
+            <h1><a href="/">BOOMS</a></h1> 
+        </li> <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone --> 
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a>
+        </li> 
+    </ul> 
+    <section class="top-bar-section">
+        <ul class="left"> 
+            <li class=""><a href="/category">Category</a></li> 
+            <li class=""><a href="/publisher">Publisher</a></li> 
+            <li class="active"><a href="/book">Book</a></li>
+        </ul> 
+    </section> 
+</nav>
+
+ 
+        <div class="panel callout radius"> 
+        <div class="off-canvas-wrap" data-offcanvas> 
+            <!-- If the contents of the .inner-wrap isn't the main content of the page, use another approripate sectioning element instead --> 
+            <div class="inner-wrap large-4">
+                <!-- all content goes here -->
+                <form id="book" action="addbook" method="post">
+                    <table>
+                    <tr>
+                        <td><label for="isbn">ISBN</label></td>
+                        <td><input id="isbn" name="isbn" type="text" value=""/>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="title">Book Title</label></td>
+                        <td><input id="title" name="title" type="text" value=""/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="author">Author</label></td>
+                        <td><input id="author" name="author" type="text" value=""/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="yearPublished">Year</label></td>
+                        <td><input id="yearPublished" name="yearPublished" type="text" value=""/>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="publisher">Publisher</label></td>
+                        <td><select id="publisher" name="publisher"><option value="1">Publisher1</option></select>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="categoryList">Category</label></td>
+                        <td><span><input id="categoryList1" name="categoryList" type="checkbox" value="Category1"/><label for="categoryList1">Category1</label></span><input type="hidden" name="_categoryList" value="on"/>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <input type="submit" value="Add Book" class="button [tiny small large]"/>
+                        </td>
+                    </tr>
+                </table>  
+                </form>
+            </div> 
+        </div>
+        </div>
+        <div class="panel">
+		<div class="row left">
+			<div class="left"><h3>Books</h3></div>
+			</div>
+			<div class="panel">
+            <form id="book" action="book" method="post">
+                <div class="row right">
+					
+					<ul class="small-5 columns"><input id="title" name="title" type="text" value=""/></ul>
+					<ul class="small-3 columns end"><input type="submit" value="Search Title" class="button [tiny small large]"/></ul>                    
+                </div>
+            </form>
+			</div>
+			<table class="data">
+				<tr>
+					<th>ISBN</th>
+					<th>Title</th>
+					<th>Author</th>
+					<th>Year</th>
+					<th>Publisher</th>
+					<th>Category</th>
+					<th>&nbsp;</th>
+					<th>&nbsp;</th>
+				</tr>
+				
+					<tr>
+						<td>2</td>
+						<td>The Personal Book</td>
+						<td>Author2</td>
+						<td>2111</td>
+						<td>Publisher1</td>
+						<td>
+								Category1 &nbsp;
+							</td>
+						<td><a href="editbook/id=2">edit</a></td>
+						<td><a href="deletebook/id=2">delete</a></td>
+					</tr>
+				
+				</table>
+        </div>
+        
+        
+        <div class="row" id="boardcontainer">
+    <div class="small-12 large-12 large-left columns">
+        <ul class="small-block-grid-3 large-block-grid-3 text-left" id="board">
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+            <li>6</li>
+            <li>7</li>
+            <li>8</li>
+            <li>9</li>
+        </ul>
+    </div>
+</div>
+
+<div class="row">
+    <div class="small-4 columns">
+        <h2>This is a sidebar</h2>
+        <div class="row">
+            <div class="small-1 columns">
+                <h6>#1</h6>
+            </div>
+            <div class="small-9 columns">
+                <p>A post title</p>
+            </div>
+            <div class="small-2 columns">
+                <button>Go</button>
+            </div>
+        </div>
+    </div>
+    <div class="small-8 columns">
+        <h2>This is the content area</h2>
+    </div>
+</div>
+    </body>
+</html>
+

@@ -4,6 +4,8 @@
  */
 package org.fawn.webapp.controller;
 
+import java.util.List;
+import javax.validation.Valid;
 import org.fawn.webapp.entity.Book;
 import org.fawn.webapp.entity.Category;
 import org.fawn.webapp.entity.Publisher;
@@ -20,8 +22,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import java.util.*;
-
+import org.springframework.web.bind.annotation.RequestParam;
 /**
  *
  * @author Fawn
@@ -42,29 +43,55 @@ public class BookController {
     
     @RequestMapping(value="/")
     public String addMessage(ModelMap modelMap){
-        modelMap.addAttribute("message","Fawn");
         return "index";
     }
     
+    @RequestMapping(value={"/addbook","/editbook","/deletebook"},method= RequestMethod.GET)
+    public String redirectPage(){
+            logger.info("Invalid Page Access. Redirecting..");
+            return "redirect:/book";
+    }
+    
     @RequestMapping(value="/addbook",method= RequestMethod.POST)
-    public String addBook(@ModelAttribute("book") Book book,BindingResult bindingResult){
-        
-        //Publisher publisher =publisherService.getPublisherById((String)bindingResult.getModel().get("publisher_id"));
-        //book.setPublisher(publisher);
-        bookService.addBook(book);
-        
-        Publisher publisher = book.getPublisher();
-        publisher.addBookIntoList(book);
-        publisherService.updatePublisher(publisher);
-        
-        List<Category> categoryList = book.getCategoryList();
-        
-        for (Category category : categoryList) {
-            category.addBookIntoList(book);
-            categoryService.updateCategory(category);
+    public String addBook( @ModelAttribute("book") @Valid Book book,BindingResult bindingResult, ModelMap modelMap){
+        if(bindingResult.hasErrors()){
+            modelMap.addAttribute("book", book);
+            modelMap.addAttribute("bookList", bookService.getBookList());
+            modelMap.addAttribute("publisherList",publisherService.getPublisherList());
+            modelMap.addAttribute("categoryList",categoryService.getCategoryList());
+
+            return "pages/book";
+        }else{
+            bookService.addBook(book);
+
+            Publisher publisher = book.getPublisher();
+            publisher.addBookIntoList(book);
+            publisherService.updatePublisher(publisher);
+
+            List<Category> categoryList = book.getCategoryList();
+
+            for (Category category : categoryList) {
+                category.addBookIntoList(book);
+                categoryService.updateCategory(category);
+            }
+            return "redirect:/book";
         }
         
-        return "redirect:/book";
+    }
+    
+    @RequestMapping(value="/book",method= RequestMethod.POST)
+    public String getFilteredBookList(@RequestParam("title") String title,ModelMap modelMap){
+        logger.info("Searching book with title '"+title+"'..");
+        List<Book> bookList = bookService.searchBooksByTitle(title);
+        
+        modelMap.addAttribute("book", new Book());
+        modelMap.addAttribute("bookList", bookList);
+        modelMap.addAttribute("publisherList",publisherService.getPublisherList());
+        modelMap.addAttribute("categoryList",categoryService.getCategoryList());
+        
+        modelMap.addAttribute("searchResult", "Found "+bookList.size()+" Books with keyword : "+title);
+        
+        return "pages/book";
     }
     
     @RequestMapping("/book")
@@ -74,17 +101,18 @@ public class BookController {
         modelMap.addAttribute("publisherList",publisherService.getPublisherList());
         modelMap.addAttribute("categoryList",categoryService.getCategoryList());
         
-        /*if (bookService.getBookList().isEmpty())
-        logger.info("Kosong");
-        else {
-        logger.info(bookService.getBookList().get(0).getTitle());
-        modelMap.addAttribute("test",bookService.getBookList().get(0).getTitle());
-        }*/
-        return "book";
+        return "pages/book";
     }
     
     @RequestMapping("deletebook/id={isbn}")
     public String removeBook(@PathVariable("isbn") String isbn){
+        Book book = bookService.getBookByIsbn(isbn);
+        if(book!=null){
+            for (Category category : book.getCategoryList()) {
+                category.removeBookFromList(book);
+                categoryService.updateCategory(category);
+            }
+        }
         bookService.removeBook(isbn);
         return "redirect:/book";
     }
@@ -92,27 +120,20 @@ public class BookController {
     @RequestMapping("editbook/id={isbn}")
     public String editBook(@PathVariable("isbn") String isbn,ModelMap modelMap){
         Book book = bookService.getBookByIsbn(isbn);
-        modelMap.addAttribute("book", book);
-        modelMap.addAttribute("publisherList",publisherService.getPublisherList());
-        
-        /*List<Category> categoryList =categoryService.getCategoryList();
-        Iterator<Category> it = categoryList.iterator();
-        for (Category categorySelected : book.getCategoryList()) {
-            
-            while(it.hasNext()){
-                Category category =it.next();
-                if(category.getName().equals(categorySelected.getName()))
-                    categoryList.remove(category);
-            }
-        }*/
-        modelMap.addAttribute("categoryList",categoryService.getCategoryList());
-        
-        return "editbook";
+        if(book!=null){
+            modelMap.addAttribute("book", book);
+            modelMap.addAttribute("publisherList",publisherService.getPublisherList());
+            modelMap.addAttribute("categoryList",categoryService.getCategoryList());
+
+            return "pages/editbook";
+        }else{
+            logger.info("Book with isbn '"+isbn+"' can not be found. Redirecting..");
+            return "redirect:/book";
+        }
     }
     
-    @RequestMapping(value="editbook/commit",method= RequestMethod.POST)
-    public String updateBook(@ModelAttribute("book") Book book,BindingResult bindingResult){
-        logger.info(book.getIsbn());
+    @RequestMapping(value="editbook",method= RequestMethod.POST)
+    public String updateBook(@ModelAttribute("pages/book") Book book,BindingResult bindingResult){
         
         Book oldBook = bookService.getBookByIsbn(book.getIsbn());
         

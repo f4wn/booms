@@ -30,28 +30,28 @@ public class CategoryDAOTest {
     @Test
     public void testAddCategory(){
         Category category = new Category();
-        category.setName("Business");
+        category.setCategoryName("Business");
         category.setDescription("Business Book");
         
         assertTrue(categoryDAO.getCategoryList().isEmpty());
         categoryDAO.addCategory(category);
         assertTrue(categoryDAO.getCategoryList().size()>0);
-        Category persistedCategory = categoryDAO.getCategoryByName(category.getName());
-        assertEquals(category.getName(), persistedCategory.getName());
+        Category persistedCategory = categoryDAO.getCategoryByName(category.getCategoryName());
+        assertEquals(category.getCategoryName(), persistedCategory.getCategoryName());
         assertEquals(category.getDescription(), persistedCategory.getDescription());
     }
     
     @Test
     public void testRemoveCategory(){
         Category category = new Category();
-        category.setName("Science Fiction");
+        category.setCategoryName("Science Fiction");
         category.setDescription("Science Fiction Book");
         
         categoryDAO.addCategory(category);
         
-        assertNotNull(categoryDAO.getCategoryByName(category.getName()));
-        categoryDAO.removeCategory(category.getName());
-        assertNull(categoryDAO.getCategoryByName(category.getName()));
+        assertNotNull(categoryDAO.getCategoryByName(category.getCategoryName()));
+        categoryDAO.removeCategory(category.getCategoryName());
+        assertNull(categoryDAO.getCategoryByName(category.getCategoryName()));
         
         
     }
@@ -59,7 +59,7 @@ public class CategoryDAOTest {
     @Test
     public void testUpdateCategory(){
         Category category = new Category();
-        category.setName("Finance");
+        category.setCategoryName("Finance");
         category.setDescription("Finance Book");
         
         categoryDAO.addCategory(category);
@@ -68,7 +68,7 @@ public class CategoryDAOTest {
         category.setDescription("Finance and Economy Book");
         
         categoryDAO.addCategory(category);
-        Category persistedCategory = categoryDAO.getCategoryByName(category.getName());
+        Category persistedCategory = categoryDAO.getCategoryByName(category.getCategoryName());
         assertNotSame(oldDescription, persistedCategory.getDescription());
         assertEquals(category.getDescription(), persistedCategory.getDescription());
         

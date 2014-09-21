@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  *
@@ -21,8 +22,9 @@ public class Publisher implements Serializable {
     @Column(name="id")
     private String id;
     
+    @NotBlank
     @Column(name="name")
-    private String name;
+    private String publisherName;
     
     @Column(name="location")
     private String location;
@@ -46,12 +48,12 @@ public class Publisher implements Serializable {
         this.location = location;
     }
 
-    public String getName() {
-        return name;
+    public String getPublisherName() {
+        return publisherName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPublisherName(String name) {
+        this.publisherName = name;
     }
 
     public String getId() {

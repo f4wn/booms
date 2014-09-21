@@ -8,7 +8,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
-
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import org.hibernate.validator.constraints.NotBlank;
 /**
  *
  * @author Fawn
@@ -16,8 +18,8 @@ import javax.persistence.*;
 @Entity
 @Table(name="book")
 public class Book implements Serializable {
+    @NotBlank
     @Id
-    //@GeneratedValue
     @Column(name="isbn")
     private String isbn;
 
@@ -27,12 +29,15 @@ public class Book implements Serializable {
     @Column(name="author")
     private String author;
     
+    @Pattern(regexp="^[1-9]\\d{3,}$")
     @Column(name="yearPublished")
     private String yearPublished;
     
+    @NotNull
     @ManyToOne//(cascade= {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
     private Publisher publisher;
     
+    @NotNull
     @ManyToMany(fetch= FetchType.EAGER,mappedBy="bookList")
     //@JoinTable(name="book_category",joinColumns=@JoinColumn(name="name"),inverseJoinColumns=@JoinColumn(name="isbn"))
     private List<Category> categoryList;

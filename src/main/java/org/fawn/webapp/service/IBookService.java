@@ -22,4 +22,6 @@ public interface IBookService {
     public void removeBook(String isbn);
     
     public Book getBookByIsbn(String isbn);
+    
+    public List<Book> searchBooksByTitle(String title);
 }

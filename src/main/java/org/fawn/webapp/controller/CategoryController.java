@@ -4,8 +4,11 @@
  */
 package org.fawn.webapp.controller;
 
+import javax.validation.Valid;
 import org.fawn.webapp.entity.Category;
 import org.fawn.webapp.service.ICategoryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -20,27 +23,34 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @Controller
 public class CategoryController {
+    private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);
     
     @Autowired
     private ICategoryService categoryService;
     
+    @RequestMapping(value={"/addcategory","/editcategory","/deletecategory"},method= RequestMethod.GET)
+    public String redirectPage(){
+            logger.info("Invalid Page Access. Redirecting..");
+            return "redirect:/category";
+    }
+    
     @RequestMapping(value="/addcategory",method= RequestMethod.POST)
-    public String addCategory(@ModelAttribute("category") Category category,BindingResult bindingResult){
-        categoryService.addCategory(category);
-        return "redirect:/category";
+    public String addCategory(@ModelAttribute("category") @Valid Category category,BindingResult bindingResult,ModelMap modelMap){
+        if(bindingResult.hasErrors()){
+            modelMap.addAttribute("category", category);
+            modelMap.addAttribute("categoryList", categoryService.getCategoryList());
+            return "pages/category";
+        }else{
+            categoryService.addCategory(category);
+            return "redirect:/category";
+        }
     }
     
     @RequestMapping("/category")
     public String getBookList(ModelMap modelMap){
         modelMap.addAttribute("category", new Category());
         modelMap.addAttribute("categoryList", categoryService.getCategoryList());
-        /*if (bookService.getBookList().isEmpty())
-        logger.info("Kosong");
-        else {
-        logger.info(bookService.getBookList().get(0).getTitle());
-        modelMap.addAttribute("test",bookService.getBookList().get(0).getTitle());
-        }*/
-        return "category";
+        return "pages/category";
     }
     
     @RequestMapping("deletecategory/name={name}")
@@ -51,13 +61,18 @@ public class CategoryController {
     
     @RequestMapping("editcategory/name={name}")
     public String editCategory(@PathVariable("name") String name,ModelMap modelMap){
-        modelMap.addAttribute("category", categoryService.getCategoryByName(name));
-        return "editcategory";
+        Category category =categoryService.getCategoryByName(name);
+        if(category!=null){
+            modelMap.addAttribute("category", category);
+            return "pages/editcategory";
+        }else{
+            logger.info("Category with name '"+name+"' can not be found. Redirecting..");
+            return "redirect:/category";
+        }
     }
     
-    @RequestMapping(value="editcategory/commit",method= RequestMethod.POST)
+    @RequestMapping(value="editcategory",method= RequestMethod.POST)
     public String updateBook(@ModelAttribute("book") Category category,BindingResult bindingResult){
-        //logger.info(book.getIsbn());
         categoryService.updateCategory(category);
         return "redirect:/category";
     }
